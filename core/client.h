@@ -5,7 +5,6 @@
 #include "db.h"
 #include "core_workload.h"
 #include "utils.h"
-// not complete
 
 namespace ycsbc{
 
@@ -20,15 +19,15 @@ namespace ycsbc{
         
         protected:
 
-            virtual int TransactionRead();
-            virtual int TransactionReadModifyWrite();
-            virtual int TransactionScan();
-            virtual int TransactionUpdate();
-            virtual int TransactionInsert();
+            // virtual int TransactionRead();
+            // virtual int TransactionReadModifyWrite();
+            // virtual int TransactionScan();
+            // virtual int TransactionUpdate();
+            // virtual int TransactionInsert();
 
             DB &db_;
             CoreWorkload &workload_;
-            //
+            
          };
 
          inline bool Client::DoInsert() {
@@ -38,27 +37,27 @@ namespace ycsbc{
              return (db_.Insert(workload_.NextTable(), key, pairs) == DB::StatusOK); //call tera api
          }
 
-         inline bool Client::DoTransaction() {
-             int status = -1;
-             switch (workload_.NextOperation()){
-                 case READ:
-                     status = TransactionRead();
-                     break;
-                 case UPDATE:
-                     status = TransactionUpdate();
-                     break;
-                 case INSERT:
-                     status = TransactionInsert();
-                     break;
-                 case SCAN:
-                     status = TransactionScan();
-                     break;
-                 default:
-                    throw utils::Exception("Operation request is not recognized"); // call utils
-             }
-             assert(status >= 0); //the following will not be execute unless status >= 0
-             return (status == DB::StatusOK);
-         }
+        //  inline bool Client::DoTransaction() {
+        //      int status = -1;
+        //      switch (workload_.NextOperation()){
+        //          case READ:
+        //              status = TransactionRead();
+        //              break;
+        //          case UPDATE:
+        //              status = TransactionUpdate();
+        //              break;
+        //          case INSERT:
+        //              status = TransactionInsert();
+        //              break;
+        //          case SCAN:
+        //              status = TransactionScan();
+        //              break;
+        //          default:
+        //             throw utils::Exception("Operation request is not recognized"); // call utils
+        //      }
+        //      assert(status >= 0); //the following will not be execute unless status >= 0
+        //      return (status == DB::StatusOK);
+        //  }
 
 } //ycsbc
 

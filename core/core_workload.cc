@@ -100,13 +100,20 @@ void CoreWorkload::Init(const utils::Properties &p) {
     if(p.GetProperty(INSERT_ORDER_PROPERTY, INSERT_ORDER_DEFAULT) == "hashed") {
         ordered_inserts_ = false;
     } else {
-        ordered_inserts_ = true;
+        ordered_inserts_ = true;   //default is true
     }
 
-    key_generator_ = new CounterGenerator(insert_start);
+    key_generator_ = new CounterGenerator(insert_start); // insert_start = 0 in coreworkload.cc
 
+    insert_key_sequence_.Set(record_count_); //reset the start at record_count_ = 100000 in properties files
 
-    
+    if (request_dist == "uniform") {
+        key_chooser_ = new UniformGenerator(0, record_count_ - 1);  //key iterator from 0-record_count
+    } else {
+        throw utils::Exception("Unknown request distribution: " + request_dist);
+    }
+
+    field_chooser_ = new UniformGenerator(0, field_count_ -1); //field iterator from 0-field_count
 }
 
 ycsbc::Generator<uint64_t> *CoreWorkload::GetFieldLenGenerator(
@@ -117,8 +124,8 @@ ycsbc::Generator<uint64_t> *CoreWorkload::GetFieldLenGenerator(
     int field_len = std::stoi(p.GetProperty(FIELD_LENGTH_PROPERTY,
                                             FIELD_LENGTH_DEFAULT));
     if(field_len_dist == "constant") {
-        return new ConstGenerator(field_len);//not complete
-    } else if(field_len_dist == "uniform") {
+        return new ConstGenerator(field_len);
+    } else if(field_len_dist == "uniform") {  //not complete
         return new UniformGenerator(1, field_len);
     } else if(field_len_dist == "zipfain") {
         return new ZipfianGenerator(1, field_len);//not complete

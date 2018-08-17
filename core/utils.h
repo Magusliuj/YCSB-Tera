@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <random>
 
+#include <cctype>
+
 namespace utils {
     
     const uint64_t kFNVOffsetBasis64 = 0xCBF29CE484222325;
@@ -47,6 +49,17 @@ namespace utils {
            std::string message_;
     };
     
+    inline bool StrToBool(std::string str) {
+        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+        if (str == "true" || str == "1") {
+            return true;
+        } else if (str == "false" || str == "0") {
+            return false;
+        } else {
+            throw Exception("Invalid bool string: " + str);
+        }
+    }
+
     //call by the properties.h 
     //Trim the string remove " " from end and head
     //The method is in stackoverflow

@@ -1,44 +1,46 @@
-#ifndef YCSB_C_TERA_DB_H_
-#define YCSB_C_TERA_EB_H_
+// //not used
 
-#include "core/db.h"
+// #ifndef YCSB_C_TERA_DB_H_
+// #define YCSB_C_TERA_EB_H_
 
-#include <string>
-#include <iostream>
-#include "core/properties.h"
-#include "tera.h" //not complete
+// #include "core/db.h"
 
-using std::cout;
-using std::endl;
+// #include <string>
+// #include <iostream>
+// #include "core/properties.h"
+// #include "tera.h" //not complete
 
-namespace ycsbc{
+// using std::cout;
+// using std::endl;
 
-class TeraClient : public DB {
-    public: 
-    int CreateTable (tera::Client* client); //not complete 
-    int CreateClient (); //not complete 
-    int Read(const std::string &table, const std::string &key,
-             const std::vector<std::string> *fields,
-             std::vector<KVPair> &result);
+// namespace ycsbc{
+
+// class TeraClient : public DB {
+//     public: 
+//     int CreateTable (tera::Client* client); //not complete 
+//     int CreateClient (); //not complete 
+//     int Read(const std::string &table, const std::string &key,
+//              const std::vector<std::string> *fields,
+//              std::vector<KVPair> &result);
     
-    int Update(const std::string &table, const std::string &key,
-               std::vector<KVPair> &result)
+//     int Update(const std::string &table, const std::string &key,
+//                std::vector<KVPair> &result)
 
-    int Insert(const std::string &table, const std::string &key,
-               std::vector<KVPair> &values){
-      return Update(table, key, values);      
-    }   
+//     int Insert(const std::string &table, const std::string &key,
+//                std::vector<KVPair> &values){
+//       return Update(table, key, values);      
+//     }   
     
 
-    private:
+//     private:
 
-    std::string tableName;
-    std::string columnFamily;
-    std::string qualifer;
-    std::string key;
-    std::vector<KVPair> values;         
-};
+//     std::string tableName;
+//     std::string columnFamily;
+//     std::string qualifer;
+//     std::string key;
+//     std::vector<KVPair> values;         
+// };
 
-} //ycsbc
+// } //ycsbc
 
-#endif //YCSB_C_TERA_DB_H_
+// #endif //YCSB_C_TERA_DB_H_

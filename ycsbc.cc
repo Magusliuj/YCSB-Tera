@@ -5,11 +5,31 @@
 #include <cstring>
 #include <string>
 #include <iostream>
+#include <vector>
+#include <future>
 //not complete
 
 using namespace std;
+
 void UsageMessage(const char *command);
+bool StrStartWith(const char *str, const char *pre);
 string ParseCommandLine(int argc, const char *argv[], utils::Properties &props);
+
+int DelegateClient(ycsbc::DB *db, ycsbc::CoreWorkload *wl, const int num_ops, bool is_loading) {
+    db->Init(); //tera_db init, no such extended method in tera.db
+                //basic_db has a init method
+    ycsbc::Client client(*db, *wl);//new a client
+    int oks = 0;
+    for (int i = 0; i < nums_ops; ++i) {
+        if(is_loading) {
+            oks += client.DoInsert();   //do insert for record count times
+        } else {
+            oks += client.DoTransaction();
+        }
+    }
+    db->Close();
+    return oks;
+}
 
 int main(const int argc, const char *argv[]) {
     utils::Properties props;
@@ -26,13 +46,25 @@ int main(const int argc, const char *argv[]) {
                             //  field_len_generator_(NULL), key_generator_(NULL), key_chooser_(NULL),
                             //  field_chooser_(NULL), scan_len_chooser_(NULL), insert_key_sequence_(3),
                             //  ordered_inserts_(true), record_count_(0)
-    wl.Init(props); //load generator
+    wl.Init(props); //new generator object
 
-    const int num_threads = stoi(props.GetProperty); //single thread by default
+    const int num_threads = stoi(props.GetProperty("threadcount", "1")); //single thread by default
 
     // Loads data
+    vector<future<int>> actual_ops;
+    int total_ops = stoi(props[ycsbc::CoreWorkload::RECORD_COUNT_PROPERTY]); 
+    for (int i = 0; i < num_threads; ++i) {
+        actual_ops.emplace_back(async(launch::async, DelegateClient, db, &wl, total_ops / num_threads, true)); 
+    }   //异步执行Delegate
+    assert((int)actual_ops.size() == num_threads);
     
-
+    //record the number of the records which are loaded succuessfully
+    int sum = 0;
+    for (auto &n : actual_ops) {
+        assert(n.valid());
+        sum += n.get();
+    }
+    cerr << "# Loadinng records:/t" << sum << endl;
 }
 
 string ParseCommandLine(int argc, const char *argv[], utils::Properties &props) {
